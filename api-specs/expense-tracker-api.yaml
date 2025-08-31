@@ -2,23 +2,41 @@ openapi: 3.0.0
 info:
   title: Expense Tracker API
   version: 1.0.0
+  description: API for managing expenses and summaries by category.
+
+servers:
+  - url: http://localhost:5000/api
+    description: Local development server
+
 paths:
   /expenses:
     get:
       summary: Get all expenses
       responses:
         "200":
-          description: List of expenses
+          description: List of all expenses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Expense"
     post:
       summary: Add a new expense
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Expense"
+              $ref: "#/components/schemas/ExpenseInput"
       responses:
         "201":
-          description: Expense created
+          description: Expense created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+
   /expenses/{id}:
     get:
       summary: Get expense by ID
@@ -31,16 +49,62 @@ paths:
       responses:
         "200":
           description: Expense details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "404":
+          description: Expense not found
     put:
       summary: Update an expense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseInput"
+      responses:
+        "200":
+          description: Expense updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "404":
+          description: Expense not found
     delete:
       summary: Delete an expense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Expense deleted successfully
+        "404":
+          description: Expense not found
+
   /expenses/summary:
     get:
       summary: Get total expenses by category
       responses:
         "200":
-          description: Expense summary
+          description: Expense summary by category
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExpenseSummary"
+
 components:
   schemas:
     Expense:
@@ -48,13 +112,52 @@ components:
       properties:
         id:
           type: integer
+          example: 1
         title:
           type: string
+          example: Grocery shopping
         amount:
           type: number
           format: double
+          example: 120.50
         category:
           type: string
+          example: Food
         date:
           type: string
           format: date
+          example: 2025-08-31
+
+    ExpenseInput:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Grocery shopping
+        amount:
+          type: number
+          format: double
+          example: 120.50
+        category:
+          type: string
+          example: Food
+        date:
+          type: string
+          format: date
+          example: 2025-08-31
+      required:
+        - title
+        - amount
+        - category
+        - date
+
+    ExpenseSummary:
+      type: object
+      properties:
+        category:
+          type: string
+          example: Food
+        totalAmount:
+          type: number
+          format: double
+          example: 500.75

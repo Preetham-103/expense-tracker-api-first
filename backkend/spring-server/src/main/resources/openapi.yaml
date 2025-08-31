@@ -1,0 +1,190 @@
+openapi: 3.0.0
+info:
+  description: API for managing expenses and summaries by category.
+  title: Expense Tracker API
+  version: 1.0.0
+servers:
+- description: Local development server
+  url: http://localhost:5000/api
+paths:
+  /expenses:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Expense"
+                type: array
+          description: List of all expenses
+      summary: Get all expenses
+      x-accepts:
+      - application/json
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseInput"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+          description: Expense created successfully
+      summary: Add a new expense
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /expenses/{id}:
+    delete:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Expense deleted successfully
+        "404":
+          description: Expense not found
+      summary: Delete an expense
+      x-accepts:
+      - application/json
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+          description: Expense details
+        "404":
+          description: Expense not found
+      summary: Get expense by ID
+      x-accepts:
+      - application/json
+    put:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseInput"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+          description: Expense updated successfully
+        "404":
+          description: Expense not found
+      summary: Update an expense
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /expenses/summary:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ExpenseSummary"
+                type: array
+          description: Expense summary by category
+      summary: Get total expenses by category
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    Expense:
+      example:
+        date: 2025-08-31
+        amount: 120.5
+        id: 1
+        title: Grocery shopping
+        category: Food
+      properties:
+        id:
+          example: 1
+          type: integer
+        title:
+          example: Grocery shopping
+          type: string
+        amount:
+          example: 120.5
+          format: double
+          type: number
+        category:
+          example: Food
+          type: string
+        date:
+          example: 2025-08-31
+          format: date
+          type: string
+      type: object
+    ExpenseInput:
+      example:
+        date: 2025-08-31
+        amount: 120.5
+        title: Grocery shopping
+        category: Food
+      properties:
+        title:
+          example: Grocery shopping
+          type: string
+        amount:
+          example: 120.5
+          format: double
+          type: number
+        category:
+          example: Food
+          type: string
+        date:
+          example: 2025-08-31
+          format: date
+          type: string
+      required:
+      - amount
+      - category
+      - date
+      - title
+      type: object
+    ExpenseSummary:
+      example:
+        totalAmount: 500.75
+        category: Food
+      properties:
+        category:
+          example: Food
+          type: string
+        totalAmount:
+          example: 500.75
+          format: double
+          type: number
+      type: object
