@@ -1,0 +1,60 @@
+openapi: 3.0.0
+info:
+  title: Expense Tracker API
+  version: 1.0.0
+paths:
+  /expenses:
+    get:
+      summary: Get all expenses
+      responses:
+        "200":
+          description: List of expenses
+    post:
+      summary: Add a new expense
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Expense"
+      responses:
+        "201":
+          description: Expense created
+  /expenses/{id}:
+    get:
+      summary: Get expense by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Expense details
+    put:
+      summary: Update an expense
+    delete:
+      summary: Delete an expense
+  /expenses/summary:
+    get:
+      summary: Get total expenses by category
+      responses:
+        "200":
+          description: Expense summary
+components:
+  schemas:
+    Expense:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        amount:
+          type: number
+          format: double
+        category:
+          type: string
+        date:
+          type: string
+          format: date
